@@ -1,0 +1,75 @@
+trigger:
+- master
+
+pool:
+  vmImage: "windows-latest"
+
+variables:
+  solution: '**/*.csproj'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Dev'
+  subscription: 'Azure subscription 1 (083b92be-9f39-40f7-81b2-726c162a9ff1)'
+  environment: ''
+  appname: 'azdops-lab-day5'
+
+stages:
+- stage: "Build"
+  displayName: "Building App"
+  jobs:
+  - job: "Building job"
+    displayName: "Building App job "
+    strategy:
+      maxParallel: 0
+    continueOnError: 'false'  # 'true' if future jobs should run even if this job fails; defaults to 'false'
+    steps: 
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
+
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+- stage: "DEV"
+  displayName: "Deploy to DEV"
+  variables:
+    environment: '-DEV'
+  jobs:
+  - job: "Deploy to DEV job"
+    displayName: "Deploying to DEV job "
+    strategy:
+        maxParallel: 0
+    continueOnError: 'false'  # 'true' if future jobs should run even if this job fails; defaults to 'false'
+    steps: 
+    - task: AzureRmWebAppDeployment@4
+      displayName: 'DEV Azure App Service Deploy: $(appname)'
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: $(subscription)
+        WebAppName: '$(appname)$(environment)'
+        packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
+
+
+- stage: "QA"
+  displayName: "Deploy to QA"
+  variables:
+    environment: '-QA'
+  jobs:
+  - job: "Deploy to QA job"
+    displayName: "Deploying to QA job "
+    strategy:
+        maxParallel: 0
+    continueOnError: 'false'  # 'true' if future jobs should run even if this job fails; defaults to 'false'
+    steps: 
+    - task: AzureRmWebAppDeployment@4
+      displayName: 'QA Azure App Service Deploy: azdops-lab-day5-QA'
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: $(subscription)
+        WebAppName: '$(appname)$(environment)'
+        packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
