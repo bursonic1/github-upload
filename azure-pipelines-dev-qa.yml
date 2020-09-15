@@ -34,7 +34,7 @@ stages:
         msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
-        
+
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -52,6 +52,13 @@ stages:
         maxParallel: 0
     continueOnError: 'false'  # 'true' if future jobs should run even if this job fails; defaults to 'false'
     steps: 
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'specific'
+        downloadPath: '$(build.artifactStagingDirectory)'
+
     - task: AzureRmWebAppDeployment@4
       displayName: 'DEV Azure App Service Deploy: $(appname)'
       inputs:
@@ -72,6 +79,13 @@ stages:
         maxParallel: 0
     continueOnError: 'false'  # 'true' if future jobs should run even if this job fails; defaults to 'false'
     steps: 
+    
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'specific'
+        downloadPath: '$(build.artifactStagingDirectory)'
+
     - task: AzureRmWebAppDeployment@4
       displayName: 'QA Azure App Service Deploy: azdops-lab-day5-QA'
       inputs:
