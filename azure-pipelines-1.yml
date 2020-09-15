@@ -30,4 +30,4 @@ steps:
     ConnectionType: 'AzureRM'
     azureSubscription: 'Azure subscription 1 (083b92be-9f39-40f7-81b2-726c162a9ff1)'
     WebAppName: 'azdops-lab-day5'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
