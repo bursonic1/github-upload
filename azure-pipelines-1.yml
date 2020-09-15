@@ -23,7 +23,9 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Azure App Service Deploy: azdops-lab-day5'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    azureSubscription: 'Azure subscription 1 (083b92be-9f39-40f7-81b2-726c162a9ff1)'
+    WebAppName: 'azdops-lab-day5'
