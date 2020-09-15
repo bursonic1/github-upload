@@ -13,11 +13,11 @@ variables:
   appname: 'azdops-lab-day5'
 
 stages:
-- stage: "Build"
-  displayName: "Building App"
+- stage: 'Build'
+  displayName: 'Building App'
   jobs:
-  - job: "Building job"
-    displayName: "Building App job "
+  - job: 'Building_job'
+    displayName: 'Building App job'
     strategy:
       maxParallel: 0
     continueOnError: 'false'  # 'true' if future jobs should run even if this job fails; defaults to 'false'
@@ -35,13 +35,13 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-- stage: "DEV"
-  displayName: "Deploy to DEV"
+- stage: 'DEV'
+  displayName: 'Deploy to DEV'
   variables:
     environment: '-DEV'
   jobs:
-  - job: "Deploy to DEV job"
-    displayName: "Deploying to DEV job "
+  - job: 'Deploy_to_DEV_job'
+    displayName: 'Deploying to DEV job'
     strategy:
         maxParallel: 0
     continueOnError: 'false'  # 'true' if future jobs should run even if this job fails; defaults to 'false'
@@ -55,13 +55,13 @@ stages:
         packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
 
 
-- stage: "QA"
-  displayName: "Deploy to QA"
+- stage: 'QA'
+  displayName: 'Deploy to QA'
   variables:
     environment: '-QA'
   jobs:
-  - job: "Deploy to QA job"
-    displayName: "Deploying to QA job "
+  - job: 'Deploy_to_QA_job'
+    displayName: 'Deploying to QA job'
     strategy:
         maxParallel: 0
     continueOnError: 'false'  # 'true' if future jobs should run even if this job fails; defaults to 'false'
